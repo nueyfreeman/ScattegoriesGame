@@ -8,13 +8,12 @@ letters haven't been used yet. Imports isolated functions from scattegory module
 
 import random
 import scattegory as scat
-global ACCEPTABLE
-ALPHABET = scat.ALPHABET
+ALPHA = scat.ALPHABET
 ANSWERS = scat.blank_dict.copy()
 
 
 # takes a new word from user while using global string ACCEPTABLE to track letters remaining
-def get_entry():
+def get_entry(turn_alphabet):
     while True:
         word = scat.enter_word()
         if word == 'STOP':
@@ -22,47 +21,45 @@ def get_entry():
         elif word == 'VIEW':
             return word
         else:
-            if check(word):
+            if check(turn_alphabet, word):
                 return word
             else:
                 print('That ain\'t it chief. Try again')
 
 
 # checks that the entered word starts with an acceptable letter, if so, updates global string
-def check(entry):
-    global ACCEPTABLE
+def check(letters_remaining, entry):
     letter = entry[0]
-    if letter in ACCEPTABLE:
-        ACCEPTABLE = ACCEPTABLE.replace(letter, '_')
+    if letter in letters_remaining:
         return True
 
 
 # plays a round for one player and returns result as a dictionary
 def play_round():
-    global ACCEPTABLE
-    ACCEPTABLE = ALPHABET  # re-initializes string for alphabet
-    name_list = []
+    round_alphabet = ALPHA
+    round_list = []
     while True:
-        next_word = get_entry()
+        next_word = get_entry(round_alphabet)
         if next_word == 'STOP':  # breaks input loop
             print('Okay no more')
+            print()
             break
         elif next_word == 'VIEW':  # lets user see their current list and what letters remain
-            scat.sort_print(name_list)
-            print('You still have no entry for: ')
-            print(ACCEPTABLE)
-        else:  # otherwise adds entry to list
-            name_list.append(next_word)
-            ANSWERS[next_word[0]].append(next_word)
-            # TRY ADJUSTING COUNTER STRING HERE SO NO NEED TO KEEP RESETTING GLOBAL VARIABLE
-    scat.sort_print(name_list)
-    print(ACCEPTABLE)
+            scat.sort_print(round_list)
+            print('You still have no entry for: ' + round_alphabet)
+            print()
+        else:  # otherwise adds entry to list of answers this round
+            round_list.append(next_word)
+            ANSWERS[next_word[0]].append(next_word)  # and to game answers
+            round_alphabet = round_alphabet.replace(next_word[0], '_')  # updates alphabet string removing that letter
+    scat.sort_print(round_list)
+    print(round_alphabet)
     # FUNCTION TO POP EACH ENTRY IN LIST AND ADD IT TO APPROPRIATE ANSWER LIST
-    name_dict = list_to_dict(name_list)
+    round_dict = list_to_dict(round_list)
     '''
     THIS IS WHERE THE PROBLEM IS ^^^ THIS LINE/FUNCTION USES ANSWER DICT INSTEAD OF A BLANK ONE
     '''
-    return name_dict
+    return round_dict
 
 
 # pops each entry from list and adds it to global answers
@@ -75,7 +72,7 @@ def winner(all_rounds):
     scores = []
     for player in all_rounds:
         points = 0
-        for letter in ALPHABET:
+        for letter in ALPHA:
             choice = player[letter]
             if answers(choice):
                 points += 1
@@ -107,8 +104,7 @@ def main():
     print('The category will be: ' + scat.category(random.randint(0, len(scat.CATEGORIES))))
     for i in range(players):
         print('Your turn Player ' + str(i + 1) + ': ')
-        this_round = play_round()
-        player_list.append(this_round)
+        player_list.append(play_round())
         print(player_list[i])
     # winner(player_list)
     print(ANSWERS)
