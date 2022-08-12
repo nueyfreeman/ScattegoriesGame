@@ -32,7 +32,8 @@ blank_dict = {
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
-CATEGORIES = ['Cities', 'Snack Foods', 'Musical Artists', 'Sports Teams/Clubs', 'Novels', 'Actors']
+CATEGORIES = ['Global Cities', 'Towns in Minnesota', 'Fast Food Restaurants', 'Singers', 'Trees', 'European Countries',
+              'Netflix Shows', 'African Countries', 'Comedians', 'Actors']
 
 
 def welcome():

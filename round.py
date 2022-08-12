@@ -7,9 +7,11 @@ letters haven't been used yet. Imports isolated functions from scattegory module
 """
 
 import random
+import copy
 import scattegory as scat
 ALPHA = scat.ALPHABET
-ANSWERS = scat.blank_dict.copy()
+ANSWERS = copy.deepcopy(scat.blank_dict)
+ROUND = copy.deepcopy(scat.blank_dict)
 
 
 # takes a new word from user while using global string ACCEPTABLE to track letters remaining
@@ -53,18 +55,10 @@ def play_round():
             ANSWERS[next_word[0]].append(next_word)  # and to game answers
             round_alphabet = round_alphabet.replace(next_word[0], '_')  # updates alphabet string removing that letter
     scat.sort_print(round_list)
-    print(round_alphabet)
-    # FUNCTION TO POP EACH ENTRY IN LIST AND ADD IT TO APPROPRIATE ANSWER LIST
-    round_dict = list_to_dict(round_list)
-    '''
-    THIS IS WHERE THE PROBLEM IS ^^^ THIS LINE/FUNCTION USES ANSWER DICT INSTEAD OF A BLANK ONE
-    '''
-    return round_dict
-
-
-# pops each entry from list and adds it to global answers
-def add_to_answers(the_list):
-    pass
+    print('You failed to come up with an answer for letters ' + round_alphabet)
+    print('Hope that was good enough...')
+    print()
+    return list_to_dict(round_list)
 
 
 # calculates points and finds winner from player list
@@ -86,7 +80,7 @@ def answers(player_answer):
 
 
 def list_to_dict(the_list):
-    new_dict = scat.blank_dict.copy()
+    new_dict = ROUND.copy()
     for each in the_list:
         letter = each[0]
         k = letter.upper()
@@ -101,11 +95,11 @@ def main():
     players = int(input('How many players will there be? '))
     print('Bet.')
     print()
-    print('The category will be: ' + scat.category(random.randint(0, len(scat.CATEGORIES))))
+    print('The category will be: ' + scat.category(random.randint(0, len(scat.CATEGORIES) - 1)))
     for i in range(players):
         print('Your turn Player ' + str(i + 1) + ': ')
         player_list.append(play_round())
-        print(player_list[i])
+        #print(player_list[i])
     # winner(player_list)
     print(ANSWERS)
 
