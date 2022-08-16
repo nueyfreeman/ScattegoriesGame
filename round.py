@@ -14,7 +14,7 @@ ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
 
 
-# takes a new word from user while using global string ACCEPTABLE to track letters remaining
+# takes a new word from user while tracking letters remaining
 def get_entry(turn_alphabet):
     while True:
         word = scat.enter_word()
@@ -63,29 +63,53 @@ def play_round():
 
 # calculates points and finds winner from player list
 def winner(all_rounds):
-    scores = []
-    for player in all_rounds:
+    players = 0
+    champ = {'Result': 'Win', 'Player': 0, 'Points': 0}
+    for player in all_rounds:  # loops each dictionary of answers (one for each round played)
         points = 0
-        for letter in ALPHA:
-            choice = player[letter]
-            if answers(choice):
+        players += 1  # keeps track of player identity by keeping count
+        for letter in ALPHA:  # loops alphabet
+            choice = player[letter]  # takes answer for each letter in the dictionary
+            if answers(choice):  # if it's unique adds one point
                 points += 1
+        print('Player ' + str(players) + ' got ' + str(points) + ' points.')
+        print()
+        if champ['Points'] < points:  # if score gives new leader updates directory
+            champ['Result'] = 'Win'
+            champ['Player'] = str(players)
+            champ['Points'] = points
+        elif champ['Points'] == points:  # also if score gives tied leader
+            champ['Result'] = 'Tie'
+            champ['Player'] = str(champ['Player']) + ' and ' + str(players)
+    return champ
+
+
+# prints the winner(s) of the game by using info saved in winner directory
+def print_results(final_stats):
+    if final_stats['Result'] == 'Win':
+        print('Congratulations to the champion: Player ' + final_stats['Player'])
+        print()
+    elif final_stats['Result'] == 'Tie':
+        print('It\'s a tie!')
+        print('Well done Players ' + final_stats['Player'] + '. The rest of y\'all sorry.')
+        print()
 
 
 # takes a players answer and checks it against the global answer record to see if it was unique
 def answers(player_answer):
-    answers_list = ANSWERS[player_answer[0]]
-    if answers_list.count(player_answer) == 1:
-        return True
+    if player_answer:  # returns false if empty list (no answer given)
+        answers_list = ANSWERS[player_answer[0]]  # locates the answer list based on first letter of received answer
+        if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
+            return True
 
 
+# converts the list for the round to a dictionary with keys for each letter
 def list_to_dict(the_list):
-    new_dict = ROUND.copy()
-    for each in the_list:
-        letter = each[0]
-        k = letter.upper()
-        if k in new_dict:
-            new_dict[k] = each
+    new_dict = ROUND.copy()  # gets blank dictionary with {letter:empty list, etc}
+    for each in the_list:  # loops answer list
+        letter = each[0].upper()
+        if letter in new_dict:
+            new_dict[letter] = each  # assigns as value in dictionary based of first letter of each answer
     return new_dict
 
 
@@ -99,9 +123,7 @@ def main():
     for i in range(players):
         print('Your turn Player ' + str(i + 1) + ': ')
         player_list.append(play_round())
-        #print(player_list[i])
-    # winner(player_list)
-    print(ANSWERS)
+    print_results(winner(player_list))
 
 
 if __name__ == '__main__':
