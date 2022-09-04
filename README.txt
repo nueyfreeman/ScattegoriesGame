@@ -1,5 +1,4 @@
-Recreating an old party game using lists and directories in python.
+Recreating an old party game in python as a learning tool. Improving
+it by adding features and complexity to practice new concepts.
 
-Currently: Struggling to implement a functional design which
-accomodates a round of play for multiple players and correctly
-logs their responses.
+Currently:
