@@ -33,7 +33,8 @@ ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 CATEGORIES = ['Global Cities', 'Towns in Minnesota', 'Fast Food Restaurants', 'Singers', 'Spices', 'European Countries',
-              'Netflix Shows', 'African Countries', 'Comedians', 'Bands/Musical Groups', 'States', 'Ice Cream Flavors']
+              'Netflix Shows', 'African Countries', 'Comedians', 'Bands/Musical Groups', 'States', 'Ice Cream Flavors',
+              'Rappers', 'Cartoons', 'Clothing Brands']
 
 
 def welcome():
@@ -45,7 +46,8 @@ Your challenge is, given a category, to think of an entry for each letter in the
 alphabet. When prompted, type your answer to make an entry. Type "view" to see what
 letters remain. Type "stop" to give up.
 
-Good Luck!"""
+Good Luck!
+"""
     )
 
 

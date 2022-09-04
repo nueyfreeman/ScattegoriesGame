@@ -29,7 +29,7 @@ def get_entry(turn_alphabet):
                 print('That ain\'t it chief. Try again')
 
 
-# checks that the entered word starts with an acceptable letter, if so, updates global string
+# checks that the entered word starts with an acceptable letter
 def check(letters_remaining, entry):
     letter = entry[0]
     if letter in letters_remaining:
