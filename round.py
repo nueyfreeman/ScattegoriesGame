@@ -9,6 +9,7 @@ letters haven't been used yet. Imports isolated functions from scattegory module
 import random
 import copy
 import scattegory as scat
+# IMPORT PLAYERS MODULE
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
@@ -58,13 +59,13 @@ def play_round():
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    return list_to_dict(round_list)
+    return list_to_dict(round_list)  # ADD DICT TO PLAYER OBJECT IN THIS FUNCTION OR WHEN ITS CALLED
 
 
 # calculates points and finds winner from player list
 def winner(all_rounds):
     players = 0
-    champ = {'Result': 'Win', 'Player': 0, 'Points': 0}
+    champ = {'Result': 'Win', 'Player': 0, 'Points': 0}  # TRACK THESE IN PLAYER OBJECT, INSTEAD VARIABLE FOR GAME STATS
     for player in all_rounds:  # loops each dictionary of answers (one for each round played)
         points = 0
         players += 1  # keeps track of player identity by keeping count
@@ -73,19 +74,19 @@ def winner(all_rounds):
             if answers(choice):  # if it's unique adds one point
                 points += 1
         print('Player ' + str(players) + ' got ' + str(points) + ' points.')
-        print()
-        if champ['Points'] < points:  # if score gives new leader updates directory
+        print()  # ADD POINTS IN PLAYER OBJECT, FOR GAME AND TOTAL
+        if champ['Points'] < points:  # if score gives new leader updates directory REPLACED BY PLAYER OBJECT/GAME STATS
             champ['Result'] = 'Win'
             champ['Player'] = str(players)
             champ['Points'] = points
         elif champ['Points'] == points:  # also if score gives tied leader
             champ['Result'] = 'Tie'
             champ['Player'] = str(champ['Player']) + ' and ' + str(players)
-    return champ
+    return champ  # RETURN GAME STATS
 
 
 # prints the winner(s) of the game by using info saved in winner directory
-def print_results(final_stats):
+def print_results(final_stats):  # TAKES GAME STATS VARIABLE INSTEAD
     if final_stats['Result'] == 'Win':
         print('Congratulations to the champion: Player ' + final_stats['Player'])
         print()
@@ -113,7 +114,7 @@ def list_to_dict(the_list):
     return new_dict
 
 
-def main():
+def main():  # USE PLAYER CLASS IN MAIN, INCORPORATE PLAYER NAME, MULTIPLE ROUNDS, TRACKING GAME HISTORY
     scat.welcome()
     player_list = []
     players = int(input('How many players will there be? '))
