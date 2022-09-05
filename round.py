@@ -1,7 +1,7 @@
 """
 Round.py
 
-Takes inputs from user to construct an alphabetical list of words, with options to view
+Takes input from user to construct an alphabetical list of words, with options to view
 the current list of words or to cease input. Uses a global string to keep track of which
 letters haven't been used yet. Imports isolated functions from scattegory module.
 """
@@ -9,7 +9,7 @@ letters haven't been used yet. Imports isolated functions from scattegory module
 import random
 import copy
 import scattegory as scat
-# IMPORT PLAYERS MODULE
+import players as user
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
@@ -38,7 +38,7 @@ def check(letters_remaining, entry):
 
 
 # plays a round for one player and returns result as a dictionary
-def play_round():
+def play_round(participant):
     round_alphabet = ALPHA
     round_list = []
     while True:
@@ -53,35 +53,35 @@ def play_round():
             print()
         else:  # otherwise adds entry to list of answers this round
             round_list.append(next_word)
-            ANSWERS[next_word[0]].append(next_word)  # and to game answers
-            round_alphabet = round_alphabet.replace(next_word[0], '_')  # updates alphabet string removing that letter
+            ANSWERS[scat.to_key(next_word)].append(next_word)  # and to game answers
+            round_alphabet = round_alphabet.replace(scat.to_key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    return list_to_dict(round_list)  # ADD DICT TO PLAYER OBJECT IN THIS FUNCTION OR WHEN ITS CALLED
+    participant.answer_history = list_to_dict(round_list)
 
 
 # calculates points and finds winner from player list
 def winner(all_rounds):
-    players = 0
+    p = 0
     champ = {'Result': 'Win', 'Player': 0, 'Points': 0}  # TRACK THESE IN PLAYER OBJECT, INSTEAD VARIABLE FOR GAME STATS
     for player in all_rounds:  # loops each dictionary of answers (one for each round played)
         points = 0
-        players += 1  # keeps track of player identity by keeping count
+        p += 1  # keeps track of player identity by keeping count
         for letter in ALPHA:  # loops alphabet
             choice = player[letter]  # takes answer for each letter in the dictionary
             if answers(choice):  # if it's unique adds one point
                 points += 1
-        print('Player ' + str(players) + ' got ' + str(points) + ' points.')
+        print('Player ' + str(p) + ' got ' + str(points) + ' points.')
         print()  # ADD POINTS IN PLAYER OBJECT, FOR GAME AND TOTAL
         if champ['Points'] < points:  # if score gives new leader updates directory REPLACED BY PLAYER OBJECT/GAME STATS
             champ['Result'] = 'Win'
-            champ['Player'] = str(players)
+            champ['Player'] = str(p)
             champ['Points'] = points
         elif champ['Points'] == points:  # also if score gives tied leader
             champ['Result'] = 'Tie'
-            champ['Player'] = str(champ['Player']) + ' and ' + str(players)
+            champ['Player'] = str(champ['Player']) + ' and ' + str(p)
     return champ  # RETURN GAME STATS
 
 
@@ -99,7 +99,7 @@ def print_results(final_stats):  # TAKES GAME STATS VARIABLE INSTEAD
 # takes a players answer and checks it against the global answer record to see if it was unique
 def answers(player_answer):
     if player_answer:  # returns false if empty list (no answer given)
-        answers_list = ANSWERS[player_answer[0]]  # locates the answer list based on first letter of received answer
+        answers_list = ANSWERS[scat.to_key(player_answer)]  # locates the answer list from first letter of given answer
         if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
             return True
 
@@ -108,7 +108,7 @@ def answers(player_answer):
 def list_to_dict(the_list):
     new_dict = ROUND.copy()  # gets blank dictionary with {letter:empty list, etc}
     for each in the_list:  # loops answer list
-        letter = each[0].upper()
+        letter = scat.to_key(each)
         if letter in new_dict:
             new_dict[letter] = each  # assigns as value in dictionary based of first letter of each answer
     return new_dict
@@ -116,15 +116,18 @@ def list_to_dict(the_list):
 
 def main():  # USE PLAYER CLASS IN MAIN, INCORPORATE PLAYER NAME, MULTIPLE ROUNDS, TRACKING GAME HISTORY
     scat.welcome()
-    player_list = []
-    players = int(input('How many players will there be? '))
-    print('Bet.')
+    order = []  # better/possible to make this a tuple instead?
+    game = int(input('How many players will there be? '))
+    print('Affirmative. The category is: ' + scat.category(random.randint(0, len(scat.CATEGORIES) - 1)))
     print()
-    print('The category will be: ' + scat.category(random.randint(0, len(scat.CATEGORIES) - 1)))
-    for i in range(players):
+    for i in range(game):
         print('Your turn Player ' + str(i + 1) + ': ')
-        player_list.append(play_round())
-    print_results(winner(player_list))
+        x = input('Please choose a name for yourself: ')
+        order.append(user.Player(x, {}, i))  # creates a Player object and adds it to the order list
+        play_round(order[i])
+        print('Nice job, ' + order[i].print_name() + '!')
+        # print(order[i].answer_history)
+    print(ANSWERS)
 
 
 if __name__ == '__main__':
