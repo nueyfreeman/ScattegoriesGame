@@ -59,30 +59,18 @@ def play_round(participant):
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    participant.answer_history = list_to_dict(round_list)
+    participant.answers = list_to_dict(round_list)
 
 
-# calculates points and finds winner from player list
+# calculates points and finds winner from list of Player objects
 def winner(all_rounds):
-    p = 0
-    champ = {'Result': 'Win', 'Player': 0, 'Points': 0}  # TRACK THESE IN PLAYER OBJECT, INSTEAD VARIABLE FOR GAME STATS
     for player in all_rounds:  # loops each dictionary of answers (one for each round played)
-        points = 0
-        p += 1  # keeps track of player identity by keeping count
         for letter in ALPHA:  # loops alphabet
-            choice = player[letter]  # takes answer for each letter in the dictionary
+            choice = player.answers[letter]  # takes answer for each letter in the dictionary
             if answers(choice):  # if it's unique adds one point
-                points += 1
-        print('Player ' + str(p) + ' got ' + str(points) + ' points.')
-        print()  # ADD POINTS IN PLAYER OBJECT, FOR GAME AND TOTAL
-        if champ['Points'] < points:  # if score gives new leader updates directory REPLACED BY PLAYER OBJECT/GAME STATS
-            champ['Result'] = 'Win'
-            champ['Player'] = str(p)
-            champ['Points'] = points
-        elif champ['Points'] == points:  # also if score gives tied leader
-            champ['Result'] = 'Tie'
-            champ['Player'] = str(champ['Player']) + ' and ' + str(p)
-    return champ  # RETURN GAME STATS
+                player.add_pt(1)
+        print(player.print_name() + ' got ' + str(player.pts()) + ' points.')
+    return
 
 
 # prints the winner(s) of the game by using info saved in winner directory
@@ -122,11 +110,12 @@ def main():  # USE PLAYER CLASS IN MAIN, INCORPORATE PLAYER NAME, MULTIPLE ROUND
     print()
     for i in range(game):
         print('Your turn Player ' + str(i + 1) + ': ')
-        x = input('Please choose a name for yourself: ')
-        order.append(user.Player(x, {}, i))  # creates a Player object and adds it to the order list
+        order.append(user.Player(i))  # creates a Player object and adds it to the order list
+        order[i].pick_name()
         play_round(order[i])
         print('Nice job, ' + order[i].print_name() + '!')
         # print(order[i].answer_history)
+    winner(order)
     print(ANSWERS)
 
 
