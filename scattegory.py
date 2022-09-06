@@ -1,3 +1,5 @@
+import random
+
 
 blank_dict = {
     'A': [],
@@ -55,6 +57,12 @@ def category(draw):
     return CATEGORIES[draw]
 
 
+def get_category():
+    print('New game beginning now.')
+    print('The category is: ' + category(random.randint(0, len(CATEGORIES) - 1)))
+    print()
+
+
 def to_key(word):
     letter = word[0]
     return letter.upper()
@@ -71,3 +79,11 @@ def enter_word():
 def sort_print(input_list):
     input_list.sort()
     print(input_list)
+
+
+def play_again():
+    pick = input('Shall we play...? (Type y to continue or any other key to stop playing)')
+    if pick == 'y':
+        return True
+    else:
+        return False

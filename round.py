@@ -6,10 +6,10 @@ the current list of words or to cease input. Uses a global string to keep track 
 letters haven't been used yet. Imports isolated functions from scattegory module.
 """
 
-import random
 import copy
 import scattegory as scat
 import players as user
+import game
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
@@ -37,23 +37,21 @@ def check(letters_remaining, entry):
         return True
 
 
-# plays a round for one player and returns result as a dictionary
-def play_round(participant):
+# plays a round for one player
+def play_round(participant, this_game):
     round_alphabet = ALPHA
     round_list = []
     while True:
         next_word = get_entry(round_alphabet)
         if next_word == 'STOP':  # breaks input loop
             print('Okay no more')
-            print()
             break
         elif next_word == 'VIEW':  # lets user see their current list and what letters remain
             scat.sort_print(round_list)
             print('You still have no entry for: ' + round_alphabet)
-            print()
         else:  # otherwise adds entry to list of answers this round
             round_list.append(next_word)
-            ANSWERS[scat.to_key(next_word)].append(next_word)  # and to game answers
+            this_game.answers[scat.to_key(next_word)].append(next_word)  # and to game answers in game object
             round_alphabet = round_alphabet.replace(scat.to_key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
     print('You failed to come up with an answer for letters ' + round_alphabet)
@@ -63,14 +61,13 @@ def play_round(participant):
 
 
 # calculates points and finds winner from list of Player objects
-def winner(all_rounds):
-    for player in all_rounds:  # loops each dictionary of answers (one for each round played)
+def tally(all_turns, this_game):
+    for player in all_turns:  # loops each dictionary of answers (one for each round played)
         for letter in ALPHA:  # loops alphabet
             choice = player.answers[letter]  # takes answer for each letter in the dictionary
-            if answers(choice):  # if it's unique adds one point
+            if is_unique(choice, this_game):  # if it's unique adds one point
                 player.add_pt(1)
-        print(player.print_name() + ' got ' + str(player.pts()) + ' points.')
-    return
+        print(player.name + ' got ' + str(player.points) + ' points.')
 
 
 # prints the winner(s) of the game by using info saved in winner directory
@@ -85,9 +82,9 @@ def print_results(final_stats):  # TAKES GAME STATS VARIABLE INSTEAD
 
 
 # takes a players answer and checks it against the global answer record to see if it was unique
-def answers(player_answer):
+def is_unique(player_answer, this_game):
     if player_answer:  # returns false if empty list (no answer given)
-        answers_list = ANSWERS[scat.to_key(player_answer)]  # locates the answer list from first letter of given answer
+        answers_list = this_game.answers[scat.to_key(player_answer)]  # locates the answer list from first letter
         if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
             return True
 
@@ -102,21 +99,27 @@ def list_to_dict(the_list):
     return new_dict
 
 
-def main():  # USE PLAYER CLASS IN MAIN, INCORPORATE PLAYER NAME, MULTIPLE ROUNDS, TRACKING GAME HISTORY
+def main():  # USE PLAYER CLASS IN MAIN TRACKING GAME HISTORY
     scat.welcome()
-    order = []  # better/possible to make this a tuple instead?
-    game = int(input('How many players will there be? '))
-    print('Affirmative. The category is: ' + scat.category(random.randint(0, len(scat.CATEGORIES) - 1)))
-    print()
-    for i in range(game):
-        print('Your turn Player ' + str(i + 1) + ': ')
-        order.append(user.Player(i))  # creates a Player object and adds it to the order list
-        order[i].pick_name()
-        play_round(order[i])
-        print('Nice job, ' + order[i].print_name() + '!')
-        # print(order[i].answer_history)
-    winner(order)
-    print(ANSWERS)
+    roster = int(input('How many players will there be? '))
+    all_rounds = []
+    round_id = 0
+    while True:
+        if scat.play_again():
+            this_round = game.Game(roster, round_id)
+            this_round.get_cat()
+            order = []
+            for i in range(roster):
+                print('Your turn Player ' + str(i + 1) + ': ')
+                order.append(user.Player(i))  # creates a Player object and adds it to the order list
+                order[i].pick_name()
+                play_round(order[i], this_round)
+            tally(order, this_round)
+            all_rounds.append(this_round)
+            round_id += 1
+        else:
+            break
+    # final_results()
 
 
 if __name__ == '__main__':
