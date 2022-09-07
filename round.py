@@ -67,18 +67,25 @@ def tally(all_turns, this_game):
             choice = player.answers[letter]  # takes answer for each letter in the dictionary
             if is_unique(choice, this_game):  # if it's unique adds one point
                 player.add_pt(1)
-        print(player.name + ' got ' + str(player.points) + ' points.')
+        player.calc_total()
+        print(player.name + ' got ' + str(player.points) + ' points. Now they have ' + str(player.total_points) + ' .')
 
 
 # prints the winner(s) of the game by using info saved in winner directory
-def print_results(final_stats):  # TAKES GAME STATS VARIABLE INSTEAD
-    if final_stats['Result'] == 'Win':
-        print('Congratulations to the champion: Player ' + final_stats['Player'])
-        print()
-    elif final_stats['Result'] == 'Tie':
+def final_results(all_players):  # TAKES GAME STATS VARIABLE INSTEAD
+    high_score = 0
+    champ = []
+    for each in all_players:
+        if each.total_points > high_score:
+            champ.clear()
+            champ.append(each)
+        elif each.total_points == high_score:
+            champ.append(each)
+    if len(champ) == 1:
+        print('Congratulations to the champion: ' + champ[0].name + '!!!')
+    elif len(champ) > 1:
         print('It\'s a tie!')
-        print('Well done Players ' + final_stats['Player'] + '. The rest of y\'all sorry.')
-        print()
+        print(high_score)
 
 
 # takes a players answer and checks it against the global answer record to see if it was unique
@@ -99,27 +106,44 @@ def list_to_dict(the_list):
     return new_dict
 
 
+def create_roster(size):
+    order = []
+    for i in range(size):
+        print('Your turn Player ' + str(i + 1) + ': ')
+        order.append(user.Player(i))  # creates a Player object and adds it to the order list
+        order[i].pick_name()
+    return order
+
+
+def new_game(all_players):
+    for each in all_players:
+        each.clear_data()
+
+
 def main():  # USE PLAYER CLASS IN MAIN TRACKING GAME HISTORY
     scat.welcome()
     roster = int(input('How many players will there be? '))
+    p_order = create_roster(roster)
     all_rounds = []
     round_id = 0
     while True:
         if scat.play_again():
             this_round = game.Game(roster, round_id)
             this_round.get_cat()
-            order = []
-            for i in range(roster):
-                print('Your turn Player ' + str(i + 1) + ': ')
-                order.append(user.Player(i))  # creates a Player object and adds it to the order list
-                order[i].pick_name()
-                play_round(order[i], this_round)
-            tally(order, this_round)
+            new_game(p_order)
+            for j in range(roster):
+                print('Good luck, ' + p_order[j].name)
+                play_round(p_order[j], this_round)
+            tally(p_order, this_round)
+            the_winners = this_round.compare_scores(p_order)
+            for each in the_winners:
+                print('The winner of this round was ' + each.name + ' .')
+                each.add_win()
             all_rounds.append(this_round)
             round_id += 1
         else:
             break
-    # final_results()
+    final_results(p_order)
 
 
 if __name__ == '__main__':

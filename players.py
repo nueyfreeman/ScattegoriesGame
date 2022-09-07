@@ -21,8 +21,13 @@ class Player:
 
     def calc_total(self):
         self.total_points += self.points
-        self.points = 0
+        # self.points = 0
 
     def add_win(self):
         self.wins += 1
+
+    def clear_data(self):
+        self.answers.clear()
+        self.points = 0
+
 
