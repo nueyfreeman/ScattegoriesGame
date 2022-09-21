@@ -1,13 +1,15 @@
 """
+Player.py
+
 This module will designate a class for individual players of a round.
 """
 
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id):  # not necessary at this point but I like ability to distinguish obj by int
         self.player_id = player_id
 
-    name = ''
+    name = ''  # add double underscore to distinguish as private variable (add revisit encapsulation and aggregation)
     answers = {}
     points = 0
     total_points = 0
@@ -21,7 +23,7 @@ class Player:
 
     def calc_total(self):
         self.total_points += self.points
-        # self.points = 0
+        # self.points = 0    WHERE IN THE PROGRAM FLOW IS BEST PLACE TO CLEAR POINTS???
 
     def add_win(self):
         self.wins += 1
