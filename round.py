@@ -1,14 +1,15 @@
 """
 Round.py
 
-Takes inputs from user to construct an alphabetical list of words, with options to view
+Takes input from user to construct an alphabetical list of words, with options to view
 the current list of words or to cease input. Uses a global string to keep track of which
 letters haven't been used yet. Imports isolated functions from scattegory module.
 """
 
-import random
 import copy
 import scattegory as scat
+import players as user
+import game
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
@@ -18,9 +19,9 @@ ROUND = copy.deepcopy(scat.blank_dict)
 def get_entry(turn_alphabet):
     while True:
         word = scat.enter_word()
-        if word == 'STOP':
+        if word == 'STOP':  # STOP AND VIEW must be here in the control flow or else could be accepted as answers...
             return word
-        elif word == 'VIEW':
+        elif word == 'VIEW':  # ... therefore any other interface options (during round) must occur here as well
             return word
         else:
             if check(turn_alphabet, word):
@@ -36,69 +37,62 @@ def check(letters_remaining, entry):
         return True
 
 
-# plays a round for one player and returns result as a dictionary
-def play_round():
-    round_alphabet = ALPHA
-    round_list = []
+# plays a round for one player
+def play_round(participant, this_game):
+    round_alphabet = ALPHA  # better as part of player obj??? if reusing player obj no, I think. but if not, yes?
+    round_list = []  # could also be a variable in player object --> EVENTUALLY SAVING THE DATA THERE ANYWAY...
     while True:
         next_word = get_entry(round_alphabet)
         if next_word == 'STOP':  # breaks input loop
             print('Okay no more')
-            print()
             break
         elif next_word == 'VIEW':  # lets user see their current list and what letters remain
             scat.sort_print(round_list)
             print('You still have no entry for: ' + round_alphabet)
-            print()
         else:  # otherwise adds entry to list of answers this round
             round_list.append(next_word)
-            ANSWERS[next_word[0]].append(next_word)  # and to game answers
-            round_alphabet = round_alphabet.replace(next_word[0], '_')  # updates alphabet string removing that letter
+            this_game.answers[scat.to_key(next_word)].append(next_word)  # and to game answers in game object
+            round_alphabet = round_alphabet.replace(scat.to_key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    return list_to_dict(round_list)
+    participant.set_ans(list_to_dict(round_list))
 
 
-# calculates points and finds winner from player list
-def winner(all_rounds):
-    players = 0
-    champ = {'Result': 'Win', 'Player': 0, 'Points': 0}
-    for player in all_rounds:  # loops each dictionary of answers (one for each round played)
-        points = 0
-        players += 1  # keeps track of player identity by keeping count
+# calculates points and finds winner from list of Player objects
+def tally(all_turns, this_game):
+    for player in all_turns:  # loops each dictionary of answers (one for each round played)
         for letter in ALPHA:  # loops alphabet
-            choice = player[letter]  # takes answer for each letter in the dictionary
-            if answers(choice):  # if it's unique adds one point
-                points += 1
-        print('Player ' + str(players) + ' got ' + str(points) + ' points.')
-        print()
-        if champ['Points'] < points:  # if score gives new leader updates directory
-            champ['Result'] = 'Win'
-            champ['Player'] = str(players)
-            champ['Points'] = points
-        elif champ['Points'] == points:  # also if score gives tied leader
-            champ['Result'] = 'Tie'
-            champ['Player'] = str(champ['Player']) + ' and ' + str(players)
-    return champ
+            choice = player.get_ans()[letter]  # takes answer for each letter in the dictionary
+            if is_unique(choice, this_game):  # if it's unique adds one point
+                player.add_pt(1)
+        player.calc_total()
+        print(player.get_name() + ' got ' +
+              str(player.get_pts()) + ' points this round. Their total is ' + str(player.get_total()))
 
 
-# prints the winner(s) of the game by using info saved in winner directory
-def print_results(final_stats):
-    if final_stats['Result'] == 'Win':
-        print('Congratulations to the champion: Player ' + final_stats['Player'])
-        print()
-    elif final_stats['Result'] == 'Tie':
+# prints the winner(s) of the game by using info saved in winner directory <<<<<DOES NOT WORK>>>>>>
+def final_results(all_players):  # DOES NOT WORK
+    high_score = 0
+    champ = []
+    for each in all_players:
+        if each.total_points > high_score:
+            champ.clear()
+            champ.append(each)
+        elif each.total_points == high_score:
+            champ.append(each)
+    if len(champ) == 1:
+        print('Congratulations to the champion: ' + champ[0].name + '!!!')
+    else:
         print('It\'s a tie!')
-        print('Well done Players ' + final_stats['Player'] + '. The rest of y\'all sorry.')
-        print()
+        print(high_score)
 
 
 # takes a players answer and checks it against the global answer record to see if it was unique
-def answers(player_answer):
+def is_unique(player_answer, this_game):
     if player_answer:  # returns false if empty list (no answer given)
-        answers_list = ANSWERS[player_answer[0]]  # locates the answer list based on first letter of received answer
+        answers_list = this_game.get_answers()[scat.to_key(player_answer)]  # locates the answer list from first letter
         if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
             return True
 
@@ -107,23 +101,56 @@ def answers(player_answer):
 def list_to_dict(the_list):
     new_dict = ROUND.copy()  # gets blank dictionary with {letter:empty list, etc}
     for each in the_list:  # loops answer list
-        letter = each[0].upper()
+        letter = scat.to_key(each)
         if letter in new_dict:
             new_dict[letter] = each  # assigns as value in dictionary based of first letter of each answer
     return new_dict
 
 
+# takes name of all the players who will be in the game and creates a Player obj for them, exported together as a list
+def create_roster(size):
+    order = []
+    for i in range(size):
+        print('Your turn Player ' + str(i + 1) + ': ')
+        order.append(user.Player(i))  # creates a Player object and adds it to the order list
+    return order
+
+
+# clears necessary data from all players in a list using func from Player class
+def new_game(all_players):
+    for each in all_players:
+        each.clear_data()
+
+
 def main():
     scat.welcome()
-    player_list = []
-    players = int(input('How many players will there be? '))
-    print('Bet.')
-    print()
-    print('The category will be: ' + scat.category(random.randint(0, len(scat.CATEGORIES) - 1)))
-    for i in range(players):
-        print('Your turn Player ' + str(i + 1) + ': ')
-        player_list.append(play_round())
-    print_results(winner(player_list))
+    num_players = int(input('How many players will there be? '))
+    p_order = create_roster(num_players)
+    all_rounds = []
+    round_id = 0  # NOT ACTUALLY MAKING USE OF THIS VARIABLE
+    print(p_order[0])
+    while scat.play_again():
+        this_round = game.Game(num_players, round_id)
+        this_round.get_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
+        new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
+        for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
+            print('Remember - the category is {}. Good luck, {}!'.format(this_round.show_cat(), p_order[i].get_name()))
+            play_round(p_order[i], this_round)
+        tally(p_order, this_round)
+        the_winners = this_round.compare_scores(p_order)
+        for each in the_winners:
+            print('The winner of this round was ' + each.name + '.')
+            each.add_win()
+        all_rounds.append(this_round)
+        round_id += 1
+    final_results(p_order)
+
+
+"""
+IN GENERAL I FEEL LIKE THERE MUST BE A MORE SUCCINCT WAY TO END THAN WHAT I HAVE NOW
+    - THREE? FUNCTIONS ADDING/CALCULATING SCORES
+    - FOLLOWING ALMOST THE EXACT SAME LOGICAL FLOW TO DETERMINE THE OVERALL WINNER
+"""
 
 
 if __name__ == '__main__':
