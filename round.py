@@ -57,7 +57,7 @@ def play_round(participant, this_game):
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    participant.answers = list_to_dict(round_list)  # change to remove <<DIRECT ACCESS>> to variable
+    participant.set_ans(list_to_dict(round_list))  # change to remove <<DIRECT ACCESS>> to variable
 
 
 # calculates points and finds winner from list of Player objects

@@ -32,4 +32,13 @@ class Player:
         self.answers.clear()
         self.points = 0
 
+    def set_ans(self, final):
+        self.answers = final
+        """
+        self.answers.update(final) ruins score calculation (returning same score of the last player to go
+        for every player...), but it appears not to have messed up the actual dictionary variable "answers,"
+        why is that???
+        """
 
+    def get_ans(self):
+        return self.answers
