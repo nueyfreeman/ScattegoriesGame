@@ -57,23 +57,23 @@ def play_round(participant, this_game):
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
     print()
-    participant.answers = list_to_dict(round_list)  # change to remove <<DIRECT ACCESS>> to variable
+    participant.set_ans(list_to_dict(round_list))
 
 
 # calculates points and finds winner from list of Player objects
 def tally(all_turns, this_game):
     for player in all_turns:  # loops each dictionary of answers (one for each round played)
         for letter in ALPHA:  # loops alphabet
-            choice = player.answers[letter]  # takes answer for each letter in the dictionary <<DIRECT ACCESS>>
+            choice = player.get_ans()[letter]  # takes answer for each letter in the dictionary
             if is_unique(choice, this_game):  # if it's unique adds one point
                 player.add_pt(1)
         player.calc_total()
-        print(player.name + ' got ' + str(player.points) + ' points. Now they have ' + str(player.total_points) + '.')
-# <<DIRECT ACCESS>>  ^^^^^^^^^^^
+        print(player.get_name() + ' got ' +
+              str(player.get_pts()) + ' points. They\'re total is: ' + str(player.get_total()) + '.')
 
 
-# prints the winner(s) of the game by using info saved in winner directory
-def final_results(all_players):
+# prints the winner(s) of the game by using info saved in winner directory DOES NOT WORK
+def final_results(all_players):  # DOES NOT WORK
     high_score = 0
     champ = []
     for each in all_players:
@@ -84,7 +84,7 @@ def final_results(all_players):
             champ.append(each)
     if len(champ) == 1:
         print('Congratulations to the champion: ' + champ[0].name + '!!!')
-    elif len(champ) > 1:
+    else:
         print('It\'s a tie!')
         print(high_score)
 
@@ -92,7 +92,7 @@ def final_results(all_players):
 # takes a players answer and checks it against the global answer record to see if it was unique
 def is_unique(player_answer, this_game):
     if player_answer:  # returns false if empty list (no answer given)
-        answers_list = this_game.answers[scat.to_key(player_answer)]  # locates the answer list from first letter <<DA>>
+        answers_list = this_game.get_answers()[scat.to_key(player_answer)]  # locates the answer list from first letter
         if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
             return True
 

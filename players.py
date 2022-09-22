@@ -32,4 +32,17 @@ class Player:
         self.answers.clear()
         self.points = 0
 
+    def set_ans(self, final):
+        self.answers = final
 
+    def get_name(self):
+        return self.name
+
+    def get_pts(self):
+        return self.points
+
+    def get_total(self):
+        return self.total_points
+
+    def get_ans(self):
+        return self.answers

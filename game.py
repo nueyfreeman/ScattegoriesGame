@@ -28,6 +28,9 @@ class Game:
     def show_result(self):
         return self.result
 
+    def get_answers(self):
+        return self.answers
+
     def get_cat(self):
         self.cat = scat.get_category()
 
