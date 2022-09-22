@@ -69,10 +69,10 @@ def tally(all_turns, this_game):
                 player.add_pt(1)
         player.calc_total()
         print(player.get_name() + ' got ' +
-              str(player.get_pts()) + ' points. They\'re total is: ' + str(player.get_total()) + '.')
+              str(player.get_pts()) + ' points this round. Their total is ' + str(player.get_total()))
 
 
-# prints the winner(s) of the game by using info saved in winner directory DOES NOT WORK
+# prints the winner(s) of the game by using info saved in winner directory <<<<<DOES NOT WORK>>>>>>
 def final_results(all_players):  # DOES NOT WORK
     high_score = 0
     champ = []
@@ -113,7 +113,6 @@ def create_roster(size):
     for i in range(size):
         print('Your turn Player ' + str(i + 1) + ': ')
         order.append(user.Player(i))  # creates a Player object and adds it to the order list
-        order[i].pick_name()
     return order
 
 
@@ -129,23 +128,21 @@ def main():
     p_order = create_roster(num_players)
     all_rounds = []
     round_id = 0  # NOT ACTUALLY MAKING USE OF THIS VARIABLE
-    while True:
-        if scat.play_again():
-            this_round = game.Game(num_players, round_id)
-            this_round.get_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
-            new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
-            for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
-                print('Good luck, ' + p_order[i].name)  # <<DIRECT ACCESS>> ADD CATEGORY REMINDER
-                play_round(p_order[i], this_round)
-            tally(p_order, this_round)
-            the_winners = this_round.compare_scores(p_order)
-            for each in the_winners:
-                print('The winner of this round was ' + each.name + '.')
-                each.add_win()
-            all_rounds.append(this_round)
-            round_id += 1
-        else:  # NOT EDITING TONIGHT BUT THESE LINES NOT NECESSARY
-            break
+    print(p_order[0])
+    while scat.play_again():
+        this_round = game.Game(num_players, round_id)
+        this_round.get_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
+        new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
+        for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
+            print('Remember - the category is {}. Good luck, {}!'.format(this_round.show_cat(), p_order[i].get_name()))
+            play_round(p_order[i], this_round)
+        tally(p_order, this_round)
+        the_winners = this_round.compare_scores(p_order)
+        for each in the_winners:
+            print('The winner of this round was ' + each.name + '.')
+            each.add_win()
+        all_rounds.append(this_round)
+        round_id += 1
     final_results(p_order)
 
 

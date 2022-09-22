@@ -7,6 +7,24 @@ This module will designate a class to record the data from a single game.
 import copy
 import scattegory as scat
 
+"""
+class Session:
+    def __init__(self):
+        self.np = get_num_players(self)
+
+        def get_num_players():
+            num_players = int(input('How many players will there be? '))
+            return num_players
+
+    all_rounds = []
+
+    def add_round(self, game_obj):
+        self.all_rounds.append(game_obj)
+
+    def show_full_session(self):
+        return self.all_rounds
+"""
+
 
 class Game:
     def __init__(self, how_many_players, game_id):

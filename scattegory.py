@@ -53,14 +53,16 @@ Good Luck!
     )
 
 
-def category(draw):
+def category(draw):   # REDUNDANT --> DELETE IT
     return CATEGORIES[draw]
 
 
 def get_category():
+    prompt = CATEGORIES[random.randint(0, len(CATEGORIES) - 1)]
     print('New game beginning now.')
-    print('The category is: ' + category(random.randint(0, len(CATEGORIES) - 1)))
+    print('The category is: ' + prompt)
     print()
+    return prompt
 
 
 def to_key(word):
