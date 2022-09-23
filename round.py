@@ -63,6 +63,7 @@ def play_round(participant, this_game):
 # calculates points and finds winner from list of Player objects
 def tally(all_turns, this_game):
     for player in all_turns:  # loops each dictionary of answers (one for each round played)
+        print(player.get_ans())
         for letter in ALPHA:  # loops alphabet
             choice = player.answers[letter]  # takes answer for each letter in the dictionary <<DIRECT ACCESS>>
             if is_unique(choice, this_game):  # if it's unique adds one point

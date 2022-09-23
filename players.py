@@ -36,8 +36,20 @@ class Player:
         self.answers = final
         """
         self.answers.update(final) ruins score calculation (returning same score of the last player to go
-        for every player...), but it appears not to have messed up the actual dictionary variable "answers,"
-        why is that???
+        for every player...), why is that???
+        
+        self.answers.update(final) -- makes what appears to be a class variable called by "obj.answers"
+        self.answers = final -- saves final as an instance variable called by "obj.answers"
+        
+        problem seems to be that i've done all this without knowing class variables were a thing. I didn't
+        have any problems, but now I'm finding that some of the variables i've used can actually act as
+        class variables by accident, even though i've intended and successfully used them as instance
+        variables up to this point
+        
+        so I actually seem to be quite lacking in knowledge here and presently have no idea how my classes
+        will behave. essentially I have been getting lucky so far by designing a program assuming that
+        there is one kind of variable in a class, when actually there are multiple and I don't know how
+        to tell which kind i've created or used  
         """
 
     def get_ans(self):
