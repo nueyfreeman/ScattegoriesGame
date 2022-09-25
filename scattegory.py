@@ -1,7 +1,7 @@
 import random
 
 
-blank_dict = {
+blank_dict = {  # make this a function instead
     'A': [],
     'B': [],
     'C': [],
@@ -53,10 +53,6 @@ Good Luck!
     )
 
 
-def category(draw):   # REDUNDANT --> DELETE IT
-    return CATEGORIES[draw]
-
-
 def get_category():
     prompt = CATEGORIES[random.randint(0, len(CATEGORIES) - 1)]
     print('New game beginning now.')
@@ -65,22 +61,20 @@ def get_category():
     return prompt
 
 
-def to_key(word):
-    letter = word[0]
-    return letter.upper()
+def key(word):
+    return word[0].upper()
 
 
 # retrieve lower case word from user
 def enter_word():
     word = input('Next choice: ')
-    word.strip()
-    return word.upper()
+    return word.strip().upper()
 
 
 # puts the list in alphabetical order and prints it
 def sort_print(input_list):
-    input_list.sort()
-    print(input_list)
+    after_sort = input_list.sort()
+    return after_sort
 
 
 def play_again():

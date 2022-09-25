@@ -51,8 +51,8 @@ def play_round(participant, this_game):
             print('You still have no entry for: ' + round_alphabet)
         else:  # otherwise adds entry to list of answers this round
             round_list.append(next_word)
-            this_game.answers[scat.to_key(next_word)].append(next_word)  # and to game answers in game object
-            round_alphabet = round_alphabet.replace(scat.to_key(next_word), '_')  # updates alphabet removing letter
+            this_game.answers[scat.key(next_word)].append(next_word)  # and to game answers in game object
+            round_alphabet = round_alphabet.replace(scat.key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
     print('You failed to come up with an answer for letters ' + round_alphabet)
     print('Hope that was good enough...')
@@ -67,14 +67,14 @@ def tally(all_turns, this_game):
             choice = player.get_ans()[letter]  # takes answer for each letter in the dictionary
             if is_unique(choice, this_game):  # if it's unique adds one point
                 player.add_pt(1)
-        player.calc_total()
         print(player.get_name() + ' got ' +
               str(player.get_pts()) + ' points this round. Their total is ' + str(player.get_total()))
 
 
 # prints the winner(s) of the game by using info saved in winner directory <<<<<DOES NOT WORK>>>>>>
 def final_results(all_players):  # DOES NOT WORK
-    high_score = 0
+    pass
+    """high_score = 0
     champ = []
     for each in all_players:
         if each.total_points > high_score:
@@ -87,12 +87,12 @@ def final_results(all_players):  # DOES NOT WORK
     else:
         print('It\'s a tie!')
         print(high_score)
-
+    """
 
 # takes a players answer and checks it against the global answer record to see if it was unique
 def is_unique(player_answer, this_game):
     if player_answer:  # returns false if empty list (no answer given)
-        answers_list = this_game.get_answers()[scat.to_key(player_answer)]  # locates the answer list from first letter
+        answers_list = this_game.get_answers()[scat.key(player_answer)]  # locates the answer list from first letter
         if answers_list.count(player_answer) == 1:  # if received answer is unique in the list
             return True
 
@@ -101,7 +101,7 @@ def is_unique(player_answer, this_game):
 def list_to_dict(the_list):
     new_dict = ROUND.copy()  # gets blank dictionary with {letter:empty list, etc}
     for each in the_list:  # loops answer list
-        letter = scat.to_key(each)
+        letter = scat.key(each)
         if letter in new_dict:
             new_dict[letter] = each  # assigns as value in dictionary based of first letter of each answer
     return new_dict
@@ -128,18 +128,17 @@ def main():
     p_order = create_roster(num_players)
     all_rounds = []
     round_id = 0  # NOT ACTUALLY MAKING USE OF THIS VARIABLE
-    print(p_order[0])
     while scat.play_again():
         this_round = game.Game(num_players, round_id)
-        this_round.get_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
+        this_round.set_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
         new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
         for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
-            print('Remember - the category is {}. Good luck, {}!'.format(this_round.show_cat(), p_order[i].get_name()))
+            print('Remember - the category is {}. Good luck, {}!'.format(this_round.get_cat(), p_order[i].get_name()))
             play_round(p_order[i], this_round)
         tally(p_order, this_round)
         the_winners = this_round.compare_scores(p_order)
         for each in the_winners:
-            print('The winner of this round was ' + each.name + '.')
+            print('The winner of this round was ' + each.get_name() + '.')
             each.add_win()
         all_rounds.append(this_round)
         round_id += 1
