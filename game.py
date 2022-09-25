@@ -27,7 +27,7 @@ class Session:
 
 
 class Game:
-    def __init__(self, how_many_players, game_id):
+    def __init__(self, how_many_players, game_id=0):
         self.how_many_players = how_many_players
         self.game_id = game_id
 
@@ -37,29 +37,29 @@ class Game:
     cat = ''
     result = 'Tie'
 
-    def show_cat(self):
+    def get_cat(self):
         return self.cat
 
-    def show_winner(self):
+    def get_winner(self):
         return self.winners
 
-    def show_result(self):
+    def get_result(self):
         return self.result
 
     def get_answers(self):
         return self.answers
 
-    def get_cat(self):
+    def set_cat(self):
         self.cat = scat.get_category()
 
     def compare_scores(self, all_players):  # takes list of player objects as arg
         for each in all_players:
-            if each.points > self.round_high:
+            if each.get_pts() > self.round_high:
                 self.winners.clear()
                 self.winners.append(each)
-                self.round_high = each.points
+                self.round_high = each.get_pts()
                 self.result = 'Win'
-            elif each.points == self.round_high:
+            elif each.get_pts() == self.round_high:
                 self.winners.append(each)
                 self.result = 'Tie'
         return self.winners  # change to have function return nothing and instead call show_winner()
