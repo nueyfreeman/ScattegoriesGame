@@ -27,39 +27,39 @@ class Session:
 
 
 class Game:
-    def __init__(self, how_many_players, game_id=0):
-        self.how_many_players = how_many_players
-        self.game_id = game_id
+    all_cats = []
 
-    winners = []  # add double underscore to distinguish as private variable (add revisit encapsulation and aggregation)
-    round_high = 0
-    answers = copy.deepcopy(scat.blank_dict)
-    cat = ''
-    result = 'Tie'
+    def __init__(self, how_many_players, game_id=0):
+        self.__how_many_players = how_many_players
+        self.__game_id = game_id
+        self.__answers = copy.deepcopy(scat.blank_dict)
+        self.__cat = self.set_cat()
+        self.__winners = []
+        self.__round_high = 0
 
     def get_cat(self):
-        return self.cat
+        return self.__cat
 
-    def get_winner(self):
-        return self.winners
-
-    def get_result(self):
-        return self.result
+    def add_ans(self, word):
+        self.__answers[scat.key(word)].append(word)
 
     def get_answers(self):
-        return self.answers
+        return self.__answers
 
-    def set_cat(self):
-        self.cat = scat.get_category()
+    def set_cat(self):  # loops until fresh category is chosen
+        while True:
+            new_cat = scat.get_category()
+            if new_cat not in self.all_cats:
+                self.__cat = new_cat
+                self.all_cats.append(self.__cat)
+                return self.__cat
 
     def compare_scores(self, all_players):  # takes list of player objects as arg
         for each in all_players:
-            if each.get_pts() > self.round_high:
-                self.winners.clear()
-                self.winners.append(each)
-                self.round_high = each.get_pts()
-                self.result = 'Win'
-            elif each.get_pts() == self.round_high:
-                self.winners.append(each)
-                self.result = 'Tie'
-        return self.winners  # change to have function return nothing and instead call show_winner()
+            if each.get_pts() > self.__round_high:
+                self.__winners.clear()
+                self.__winners.append(each)
+                self.__round_high = each.get_pts()
+            elif each.get_pts() == self.__round_high:
+                self.__winners.append(each)
+        return self.__winners

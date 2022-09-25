@@ -73,10 +73,14 @@ def enter_word():
 
 # puts the list in alphabetical order and prints it
 def sort_print(input_list):
-    after_sort = input_list.sort()
-    return after_sort
+    input_list.sort()
+    return input_list
 
 
-def play_again():
+# lets user choose to continue and clears relevant data from player instances to begin game
+def play_again(all_players):
     pick = input('Shall we play...? (Press enter to continue or any other key to stop playing)')
-    return True if pick == '' else False  # felt pretty simple but maybe better not to use one-liners at all?
+    if pick == '':
+        for each in all_players:
+            each.clear_data()
+        return True

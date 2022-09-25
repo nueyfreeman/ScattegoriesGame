@@ -4,6 +4,11 @@ Round.py
 Takes input from user to construct an alphabetical list of words, with options to view
 the current list of words or to cease input. Uses a global string to keep track of which
 letters haven't been used yet. Imports isolated functions from scattegory module.
+
+TO DO - Add timer
+    - move some functions in main() to game.py
+    - move some play_round() variables to players.py
+    - better algorithms (no list_to_dict; calculate final results without redundancy)
 """
 
 import copy
@@ -41,7 +46,7 @@ def check(letters_remaining, entry):
 def play_round(participant, this_game):
     r_alpha = ALPHA
     round_list = []  # CAN UPDATE FUNCTION TO SAVE ANSWERS DIRECTLY TO A DICTIONARY
-    while True:
+    while True:  # BOOLEAN FUNC AS TIMER HERE
         next_word = get_entry(r_alpha)
         if next_word == 'STOP':  # breaks input loop
             break
@@ -50,7 +55,7 @@ def play_round(participant, this_game):
             print('You still have no entry for: ' + r_alpha)
         else:
             round_list.append(next_word)  # otherwise adds entry to list of answers this round
-            this_game.answers[scat.key(next_word)].append(next_word)  # and to game answers in game object
+            this_game.add_ans(next_word)  # and to answers in game object
             r_alpha = r_alpha.replace(scat.key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
     print('You failed to come up with an answer for letters ' + r_alpha)
@@ -70,23 +75,22 @@ def tally(all_turns, this_game):
               str(player.get_pts()) + ' points this round. Their total is ' + str(player.get_total()))
 
 
-# prints the winner(s) of the game by using info saved in winner directory <<<<<DOES NOT WORK>>>>>>
-def final_results(all_players):  # DOES NOT WORK
-    pass
-    """high_score = 0
+# prints the winner(s) of the game
+def final_results(all_players):
+    high_score = 0
     champ = []
     for each in all_players:
-        if each.total_points > high_score:
+        if each.get_total() > high_score:
             champ.clear()
             champ.append(each)
-        elif each.total_points == high_score:
+            high_score = each.get_total()
+        elif each.get_total() == high_score:
             champ.append(each)
     if len(champ) == 1:
-        print('Congratulations to the champion: ' + champ[0].name + '!!!')
+        print('Congratulations to the champion: ' + champ[0].get_name() + '!!!')
     else:
         print('It\'s a tie!')
         print(high_score)
-    """
 
 
 # takes a players answer and checks it against the global answer record to see if it was unique
@@ -116,20 +120,12 @@ def create_roster(size):
     return order
 
 
-# clears necessary data from all players in a list using func from Player class
-def new_game(all_players):
-    for each in all_players:
-        each.clear_data()
-
-
 def main():
     scat.welcome()
     num_players = int(input('How many players will there be? '))
     p_order = create_roster(num_players)
-    while scat.play_again():
+    while scat.play_again(p_order):
         this_round = game.Game(num_players)
-        this_round.set_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
-        new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
         for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
             print('Remember - the category is {}. Good luck, {}!'.format(this_round.get_cat(), p_order[i].get_name()))
             play_round(p_order[i], this_round)

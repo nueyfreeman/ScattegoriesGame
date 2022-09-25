@@ -6,13 +6,13 @@ This module will designate a class for individual players of a round.
 
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id=0):
         self.player_id = player_id  # not necessary but i like having option to identify instance by int
         self.__name = self.set_name()
         self.__points = 0
         self.__total_points = 0
         self.__wins = 0
-        self.answers = {}
+        self.__answers = {}
 
     def __str__(self):
         return f'{self.__name} ' \
@@ -29,11 +29,11 @@ class Player:
         self.__wins += 1
 
     def clear_data(self):
-        self.answers.clear()
+        self.__answers.clear()
         self.__points = 0
 
     def set_ans(self, final):
-        self.answers.update(final)
+        self.__answers.update(final)
 
     def get_name(self):
         return self.__name
@@ -45,4 +45,4 @@ class Player:
         return self.__total_points
 
     def get_ans(self):
-        return self.answers
+        return self.__answers
