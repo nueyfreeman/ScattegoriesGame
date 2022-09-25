@@ -15,7 +15,7 @@ ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
 
 
-# takes a new word from user while tracking letters remaining
+# takes a new word from user (ALL INTERFACE OPTIONS MUST OCCUR HERE)
 def get_entry(turn_alphabet):
     while True:
         word = scat.enter_word()
@@ -37,24 +37,23 @@ def check(letters_remaining, entry):
         return True
 
 
-# plays a round for one player
+# plays a round for one player (INTERFACE ACTIONS MUST TAKE PLACE HERE)
 def play_round(participant, this_game):
-    round_alphabet = ALPHA  # better as part of player obj??? if reusing player obj no, I think. but if not, yes?
-    round_list = []  # could also be a variable in player object --> EVENTUALLY SAVING THE DATA THERE ANYWAY...
+    r_alpha = ALPHA
+    round_list = []  # CAN UPDATE FUNCTION TO SAVE ANSWERS DIRECTLY TO A DICTIONARY
     while True:
-        next_word = get_entry(round_alphabet)
+        next_word = get_entry(r_alpha)
         if next_word == 'STOP':  # breaks input loop
-            print('Okay no more')
             break
         elif next_word == 'VIEW':  # lets user see their current list and what letters remain
             scat.sort_print(round_list)
-            print('You still have no entry for: ' + round_alphabet)
-        else:  # otherwise adds entry to list of answers this round
-            round_list.append(next_word)
+            print('You still have no entry for: ' + r_alpha)
+        else:
+            round_list.append(next_word)  # otherwise adds entry to list of answers this round
             this_game.answers[scat.key(next_word)].append(next_word)  # and to game answers in game object
-            round_alphabet = round_alphabet.replace(scat.key(next_word), '_')  # updates alphabet removing letter
+            r_alpha = r_alpha.replace(scat.key(next_word), '_')  # updates alphabet removing letter
     scat.sort_print(round_list)
-    print('You failed to come up with an answer for letters ' + round_alphabet)
+    print('You failed to come up with an answer for letters ' + r_alpha)
     print('Hope that was good enough...')
     print()
     participant.set_ans(list_to_dict(round_list))
@@ -62,7 +61,7 @@ def play_round(participant, this_game):
 
 # calculates points and finds winner from list of Player objects
 def tally(all_turns, this_game):
-    for player in all_turns:  # loops each dictionary of answers (one for each round played)
+    for player in all_turns:  # loops player instances
         for letter in ALPHA:  # loops alphabet
             choice = player.get_ans()[letter]  # takes answer for each letter in the dictionary
             if is_unique(choice, this_game):  # if it's unique adds one point
@@ -89,6 +88,7 @@ def final_results(all_players):  # DOES NOT WORK
         print(high_score)
     """
 
+
 # takes a players answer and checks it against the global answer record to see if it was unique
 def is_unique(player_answer, this_game):
     if player_answer:  # returns false if empty list (no answer given)
@@ -97,7 +97,7 @@ def is_unique(player_answer, this_game):
             return True
 
 
-# converts the list for the round to a dictionary with keys for each letter
+# converts the list for the round to a dictionary (SURELY CAN MAKE A BETTER ALGORITHM FOR SAVING ANSWERS)
 def list_to_dict(the_list):
     new_dict = ROUND.copy()  # gets blank dictionary with {letter:empty list, etc}
     for each in the_list:  # loops answer list
@@ -107,7 +107,7 @@ def list_to_dict(the_list):
     return new_dict
 
 
-# takes name of all the players who will be in the game and creates a Player obj for them, exported together as a list
+# takes name of all the players and creates a Player instance for them, returned in a list
 def create_roster(size):
     order = []
     for i in range(size):
@@ -126,10 +126,8 @@ def main():
     scat.welcome()
     num_players = int(input('How many players will there be? '))
     p_order = create_roster(num_players)
-    all_rounds = []
-    round_id = 0  # NOT ACTUALLY MAKING USE OF THIS VARIABLE
     while scat.play_again():
-        this_round = game.Game(num_players, round_id)
+        this_round = game.Game(num_players)
         this_round.set_cat()  # CAN I RUN THIS FUNC DURING INITIALIZATION?
         new_game(p_order)  # PERHAPS THIS FUNC SHOULD BE PART OF GAME OBJ INSTEAD?
         for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
@@ -140,8 +138,6 @@ def main():
         for each in the_winners:
             print('The winner of this round was ' + each.get_name() + '.')
             each.add_win()
-        all_rounds.append(this_round)
-        round_id += 1
     final_results(p_order)
 
 

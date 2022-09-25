@@ -27,7 +27,7 @@ class Session:
 
 
 class Game:
-    def __init__(self, how_many_players, game_id):
+    def __init__(self, how_many_players, game_id=0):
         self.how_many_players = how_many_players
         self.game_id = game_id
 
