@@ -78,5 +78,5 @@ def sort_print(input_list):
 
 
 def play_again():
-    pick = input('Shall we play...? (Type y to continue or any other key to stop playing)')
-    return True if pick == 'y' else False  # felt pretty simple but maybe better not to use one-liners at all?
+    pick = input('Shall we play...? (Press enter to continue or any other key to stop playing)')
+    return True if pick == '' else False  # felt pretty simple but maybe better not to use one-liners at all?

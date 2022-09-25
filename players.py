@@ -7,9 +7,8 @@ This module will designate a class for individual players of a round.
 
 class Player:
     def __init__(self, player_id):
-        # player_id not necessary at this point, but I like ability to distinguish obj by int
-        self.player_id = player_id
-        self.__name = self.set_name()  # WORKS BUT... what's going on? I use the variable while defining the variable
+        self.player_id = player_id  # not necessary but i like having option to identify instance by int
+        self.__name = self.set_name()
         self.__points = 0
         self.__total_points = 0
         self.__wins = 0
@@ -20,8 +19,7 @@ class Player:
                f'(Round Points: {self.__points}, Total Points: {self.__total_points}, Wins: {self.__wins})'
 
     def set_name(self):
-        duck = input('Please choose a name: ')
-        return duck
+        return input('Please choose a name: ')
 
     def add_pt(self, count):
         self.__points += count
@@ -35,7 +33,7 @@ class Player:
         self.__points = 0
 
     def set_ans(self, final):
-        self.answers = final
+        self.answers.update(final)
 
     def get_name(self):
         return self.__name
