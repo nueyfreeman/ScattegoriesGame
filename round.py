@@ -15,9 +15,12 @@ import copy
 import scattegory as scat
 import players as user
 import game
+import time
+
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
+TIME = 90
 
 
 # takes a new word from user (ALL INTERFACE OPTIONS MUST OCCUR HERE)
@@ -62,6 +65,13 @@ def play_round(participant, this_game):
     print('Hope that was good enough...')
     print()
     participant.set_ans(list_to_dict(round_list))
+
+
+def timer():
+    start = time.time()
+    while True:
+        if time.time() - start > TIME:
+            break
 
 
 # calculates points and finds winner from list of Player objects
