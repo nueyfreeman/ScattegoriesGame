@@ -5,7 +5,7 @@ Takes input from user to construct an alphabetical list of words, with options t
 the current list of words or to cease input. Uses a global string to keep track of which
 letters haven't been used yet. Imports isolated functions from scattegory module.
 
-TO DO - Add timer
+TO DO
     - move some functions in main() to game.py
     - move some play_round() variables to players.py
     - better algorithms (no list_to_dict; calculate final results without redundancy)
@@ -20,7 +20,7 @@ import time
 ALPHA = scat.ALPHABET
 ANSWERS = copy.deepcopy(scat.blank_dict)
 ROUND = copy.deepcopy(scat.blank_dict)
-TIME = 90
+TIME = 50
 
 
 # takes a new word from user (ALL INTERFACE OPTIONS MUST OCCUR HERE)
@@ -49,7 +49,8 @@ def check(letters_remaining, entry):
 def play_round(participant, this_game):
     r_alpha = ALPHA
     round_list = []  # CAN UPDATE FUNCTION TO SAVE ANSWERS DIRECTLY TO A DICTIONARY
-    while True:  # BOOLEAN FUNC AS TIMER HERE
+    start = time.time()
+    while time.time() - start < TIME:  # puts a time limit per player
         next_word = get_entry(r_alpha)
         if next_word == 'STOP':  # breaks input loop
             break
@@ -65,13 +66,6 @@ def play_round(participant, this_game):
     print('Hope that was good enough...')
     print()
     participant.set_ans(list_to_dict(round_list))
-
-
-def timer():
-    start = time.time()
-    while True:
-        if time.time() - start > TIME:
-            break
 
 
 # calculates points and finds winner from list of Player objects
@@ -136,7 +130,7 @@ def main():
     p_order = create_roster(num_players)
     while scat.play_again(p_order):
         this_round = game.Game(num_players)
-        for i in range(num_players):  # THE TIMER WOULD BE IN THIS LOOP
+        for i in range(num_players):
             print('Remember - the category is {}. Good luck, {}!'.format(this_round.get_cat(), p_order[i].get_name()))
             play_round(p_order[i], this_round)
         tally(p_order, this_round)
